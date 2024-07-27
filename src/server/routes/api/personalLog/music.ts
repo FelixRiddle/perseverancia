@@ -7,6 +7,7 @@ import expandData from "../../../../lib/miscellaneous/expandData";
 export default function musicRouter() {
 	const router = express.Router();
 	
+	// TODO: Pagination
 	router.get("/", async (req, res) => {
 		try {
 			const {
@@ -50,6 +51,51 @@ export default function musicRouter() {
 			const expanded = await expandData(req);
 			return res.status(200).send({
 				...expanded
+			});
+		} catch(err) {
+			console.error(err);
+			req.flash("messages", [{
+				message: "Error 500: Internal error",
+				type: "error"
+			}]);
+			
+			const expanded = await expandData(req);
+			return res.status(500).send({
+				...expanded
+			});
+		}
+	});
+	
+	router.put("/:id", async (req, res) => {
+		try {
+			const {
+				Music
+			} = req.models;
+			
+			// Find data
+			const music = await Music.findByPk(req.params.id);
+			if(!music) {
+				return res.status(404).send({
+					messages: [{
+						message: "Music not found",
+						error: true,
+						type: 'error',
+					}]
+				});
+			}
+			
+			// Update
+			Object.assign(music, req.body);
+			await music.save();
+			
+			req.flash("messages", [{
+                message: "Music updated",
+                type: "success"
+            }]);
+			
+            const expanded = await expandData(req);
+			return res.status(200).send({
+				...expanded,
 			});
 		} catch(err) {
 			console.error(err);
