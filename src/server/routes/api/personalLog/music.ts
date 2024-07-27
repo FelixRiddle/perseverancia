@@ -111,6 +111,46 @@ export default function musicRouter() {
 		}
 	});
 	
+	router.get("/:id", async (req, res) => {
+		try {
+			const {
+				Music
+			} = req.models;
+			
+			// Find data
+			const music = await Music.findByPk(req.params.id, {
+				raw: true,
+			});
+			if(!music) {
+				req.flash("messages", [{
+					message: "Music not found",
+					error: true,
+					type: 'error',
+				}]);
+				
+				const expanded = await expandData(req);
+				return res.status(404).send({
+					...expanded
+				});
+			}
+			
+			return res.status(200).send({
+				music
+			});
+		} catch(err) {
+			console.error(err);
+			req.flash("messages", [{
+				message: "Error 500: Internal error",
+				type: "error"
+			}]);
+			
+			const expanded = await expandData(req);
+			return res.status(500).send({
+				...expanded
+			});
+		}
+	});
+	
 	return router;
 }
 
