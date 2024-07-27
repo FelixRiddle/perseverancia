@@ -36,11 +36,8 @@ export default async function expandData(req, options = {
 	// }
 	
 	// Messages
-	let messages: Array<StatusMessage> = [];
-	const flashMessages: Array<StatusMessage> = req.flash().messages;
-	if(flashMessages) {
-		messages = messages.concat(flashMessages);
-		
+	const messages: Array<StatusMessage> = req.messages;
+	if(messages && messages.length > 0) {
 		for(const message of messages) {
 			if(message.type === "error" || message.error) {
 				console.log(color.set(message.message, "red"));	
@@ -52,6 +49,6 @@ export default async function expandData(req, options = {
 	
 	return {
 		// user,
-		messages
+		messages,
 	};
 }

@@ -106,7 +106,7 @@ export default async function startServer(models: Models) {
 	app.use(session({
 		store: sequelizeStore,
 		secret: secretToken,
-		key: secretKeyName,
+		// key: secretKeyName,
 		resave: false,
 		saveUninitialized: true,
 	}));
@@ -118,6 +118,7 @@ export default async function startServer(models: Models) {
 	app.use((req, res, next) => {
 		printRoute(req);
 		
+		req.messages = [];
 		req.models = models;
 		
 		return next();

@@ -32,10 +32,10 @@ export default function musicRouter() {
             });
         } catch(err) {
             console.error(err);
-            req.flash("messages", [{
+			req.messages = [{
                 message: "Error 500: Internal error",
                 type: "error"
-            }]);
+            }];
             
             const expanded = await expandData(req);
             return res.status(500).send({
@@ -60,10 +60,10 @@ export default function musicRouter() {
 			});
 		} catch(err) {
 			console.error(err);
-            req.flash("messages", [{
+			req.messages = [{
                 message: "Error 500: Internal error",
                 type: "error"
-            }]);
+            }];
             
             const expanded = await expandData(req);
             return res.status(500).send({
@@ -80,10 +80,10 @@ export default function musicRouter() {
 			
 			await Music.create(req.body);
 			
-			req.flash("messages", [{
+			req.messages = [{
 				message: "Music information inserted",
 				type: "success"
-			}]);
+			}];
 			
 			const expanded = await expandData(req);
 			return res.status(200).send({
@@ -91,10 +91,10 @@ export default function musicRouter() {
 			});
 		} catch(err) {
 			console.error(err);
-			req.flash("messages", [{
-				message: "Error 500: Internal error",
-				type: "error"
-			}]);
+			req.messages = [{
+                message: "Error 500: Internal error",
+                type: "error"
+            }];
 			
 			const expanded = await expandData(req);
 			return res.status(500).send({
@@ -125,10 +125,10 @@ export default function musicRouter() {
 			Object.assign(music, req.body);
 			await music.save();
 			
-			req.flash("messages", [{
+			req.messages = [{
                 message: "Music updated",
                 type: "success"
-            }]);
+            }];
 			
             const expanded = await expandData(req);
 			return res.status(200).send({
@@ -136,10 +136,10 @@ export default function musicRouter() {
 			});
 		} catch(err) {
 			console.error(err);
-			req.flash("messages", [{
+			req.messages = [{
 				message: "Error 500: Internal error",
 				type: "error"
-			}]);
+			}];
 			
 			const expanded = await expandData(req);
 			return res.status(500).send({
@@ -159,11 +159,11 @@ export default function musicRouter() {
 				raw: true,
 			});
 			if(!music) {
-				req.flash("messages", [{
+				req.messages = [{
 					message: "Music not found",
 					error: true,
 					type: 'error',
-				}]);
+				}];
 				
 				const expanded = await expandData(req);
 				return res.status(404).send({
@@ -176,10 +176,10 @@ export default function musicRouter() {
 			});
 		} catch(err) {
 			console.error(err);
-			req.flash("messages", [{
+			req.messages = [{
 				message: "Error 500: Internal error",
 				type: "error"
-			}]);
+			}];
 			
 			const expanded = await expandData(req);
 			return res.status(500).send({
@@ -197,11 +197,11 @@ export default function musicRouter() {
 			// Find data
 			const music = await Music.findByPk(req.params.id);
 			if(!music) {
-				req.flash("messages", [{
+				req.messages = [{
 					message: "Music not found",
 					error: true,
 					type: 'error',
-				}]);
+				}];
 				
 				const expanded = await expandData(req);
 				return res.status(404).send({
@@ -211,10 +211,10 @@ export default function musicRouter() {
 			
 			await music.destroy();
 			
-			req.flash("messages", [{
+			req.messages = [{
 				message: "Deleted",
 				type: "success"
-			}]);
+			}];
 			
 			const expanded = await expandData(req);
 			return res.status(200).send({
@@ -222,10 +222,10 @@ export default function musicRouter() {
 			});
 		} catch(err) {
 			console.error(err);
-			req.flash("messages", [{
+			req.messages = [{
 				message: "Error 500: Internal error",
 				type: "error"
-			}]);
+			}];
 			
 			const expanded = await expandData(req);
 			return res.status(500).send({

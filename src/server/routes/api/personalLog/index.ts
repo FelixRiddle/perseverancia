@@ -39,10 +39,10 @@ export default function personalLogRouter() {
             });
         } catch(err) {
             console.error(err);
-            req.flash("messages", [{
+            req.messages = [{
                 message: "Error 500: Internal error",
                 type: "error"
-            }]);
+            }];
             
             const expanded = await expandData(req);
             return res.status(500).send({
@@ -67,10 +67,10 @@ export default function personalLogRouter() {
 			});
 		} catch(err) {
 			console.error(err);
-            req.flash("messages", [{
+            req.messages = [{
                 message: "Error 500: Internal error",
                 type: "error"
-            }]);
+            }];
             
             const expanded = await expandData(req);
             return res.status(500).send({
@@ -87,10 +87,10 @@ export default function personalLogRouter() {
 			
 			await PersonalLog.create(req.body);
 			
-			req.flash("messages", [{
+			req.messages = [{
 				message: "Ok",
 				type: "success"
-			}]);
+			}];
 			
 			const expanded = await expandData(req);
 			return res.status(200).send({
@@ -98,10 +98,10 @@ export default function personalLogRouter() {
 			});
 		} catch(err) {
 			console.error(err);
-			req.flash("messages", [{
+			req.messages = [{
 				message: "Error 500: Internal error",
 				type: "error"
-			}]);
+			}];
 			
 			const expanded = await expandData(req);
 			return res.status(500).send({
@@ -119,12 +119,15 @@ export default function personalLogRouter() {
 			// Find data
 			const log = await PersonalLog.findByPk(req.params.id);
 			if(!log) {
+				req.messages = [{
+					message: "Log not found",
+					error: true,
+					type: 'error',
+				}];
+				
+				const expanded = await expandData(req);
 				return res.status(404).send({
-					messages: [{
-						message: "Log not found",
-						error: true,
-						type: 'error',
-					}]
+					...expanded
 				});
 			}
 			
@@ -132,10 +135,10 @@ export default function personalLogRouter() {
 			Object.assign(log, req.body);
 			await log.save();
 			
-			req.flash("messages", [{
+			req.messages = [{
                 message: "Updated",
                 type: "success"
-            }]);
+            }];
 			
             const expanded = await expandData(req);
 			return res.status(200).send({
@@ -143,10 +146,10 @@ export default function personalLogRouter() {
 			});
 		} catch(err) {
 			console.error(err);
-			req.flash("messages", [{
+			req.messages = [{
 				message: "Error 500: Internal error",
 				type: "error"
-			}]);
+			}];
 			
 			const expanded = await expandData(req);
 			return res.status(500).send({
@@ -166,11 +169,11 @@ export default function personalLogRouter() {
 				raw: true,
 			});
 			if(!log) {
-				req.flash("messages", [{
+				req.messages = [{
 					message: "Not found",
 					error: true,
 					type: 'error',
-				}]);
+				}];
 				
 				const expanded = await expandData(req);
 				return res.status(404).send({
@@ -183,10 +186,10 @@ export default function personalLogRouter() {
 			});
 		} catch(err) {
 			console.error(err);
-			req.flash("messages", [{
+			req.messages = [{
 				message: "Error 500: Internal error",
 				type: "error"
-			}]);
+			}];
 			
 			const expanded = await expandData(req);
 			return res.status(500).send({
@@ -204,11 +207,11 @@ export default function personalLogRouter() {
 			// Find data
 			const log = await PersonalLog.findByPk(req.params.id);
 			if(!log) {
-				req.flash("messages", [{
+				req.messages = [{
 					message: "Not found",
 					error: true,
 					type: 'error',
-				}]);
+				}];
 				
 				const expanded = await expandData(req);
 				return res.status(404).send({
@@ -218,10 +221,10 @@ export default function personalLogRouter() {
 			
 			await log.destroy();
 			
-			req.flash("messages", [{
+			req.messages = [{
 				message: "Deleted",
 				type: "success"
-			}]);
+			}];
 			
 			const expanded = await expandData(req);
 			return res.status(200).send({
@@ -229,10 +232,10 @@ export default function personalLogRouter() {
 			});
 		} catch(err) {
 			console.error(err);
-			req.flash("messages", [{
+			req.messages = [{
 				message: "Error 500: Internal error",
 				type: "error"
-			}]);
+			}];
 			
 			const expanded = await expandData(req);
 			return res.status(500).send({
