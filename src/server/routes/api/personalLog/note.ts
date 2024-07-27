@@ -1,38 +1,27 @@
 import express from "express";
-import musicRouter from "./music";
-import expandData from "../../../../lib/miscellaneous/expandData";
 import { Op } from "sequelize";
-import noteRouter from "./note";
+
+import expandData from "../../../../lib/miscellaneous/expandData";
 
 /**
- * 
+ * Notes router
  */
-export default function personalLogRouter() {
-    const router = express.Router();
-    
-	// TODO:
-	// note,
-	// logNotes
+export default function noteRouter() {
+	const router = express.Router();
 	
-	// TODO: I don't really use this one anymore maybe implement it later
-	// listeningTo,
-	router.use("/music", musicRouter());
-	router.use("/note", noteRouter());
-	
-	// Log endpoints
-    // Search
-	// Sorted out through description
+	// Search
+	// Sorted out through the name
     router.get("/search/:query", async (req, res) => {
         try {
             const {
-                PersonalLog
+                Note
             } = req.models;
             
             const searchTerm = req.params.query;
             
-            const logs = await PersonalLog.findAll({
+            const notes = await Note.findAll({
                 where: {
-                    description: {
+                    note: {
                         [Op.like]: `%${searchTerm}%`
                     }
                 },
@@ -40,11 +29,11 @@ export default function personalLogRouter() {
             });
             
             return res.status(200).send({
-                logs
+                notes
             });
         } catch(err) {
             console.error(err);
-            req.messages = [{
+			req.messages = [{
                 message: "Error 500: Internal error",
                 type: "error"
             }];
@@ -60,19 +49,19 @@ export default function personalLogRouter() {
 	router.get("/", async (req, res) => {
 		try {
 			const {
-				PersonalLog
+				Note
 			} = req.models;
 			
-			const logs = await PersonalLog.findAll({
+			const notes = await Note.findAll({
 				raw: true,
 			});
 			
 			return res.status(200).send({
-				logs
+				notes
 			});
 		} catch(err) {
 			console.error(err);
-            req.messages = [{
+			req.messages = [{
                 message: "Error 500: Internal error",
                 type: "error"
             }];
@@ -87,13 +76,13 @@ export default function personalLogRouter() {
 	router.post("/", async (req, res) => {
 		try {
 			const {
-				PersonalLog
+				Note
 			} = req.models;
 			
-			await PersonalLog.create(req.body);
+			await Note.create(req.body);
 			
 			req.messages = [{
-				message: "Ok",
+				message: "Inserted",
 				type: "success"
 			}];
 			
@@ -104,9 +93,9 @@ export default function personalLogRouter() {
 		} catch(err) {
 			console.error(err);
 			req.messages = [{
-				message: "Error 500: Internal error",
-				type: "error"
-			}];
+                message: "Error 500: Internal error",
+                type: "error"
+            }];
 			
 			const expanded = await expandData(req);
 			return res.status(500).send({
@@ -118,27 +107,24 @@ export default function personalLogRouter() {
 	router.put("/:id", async (req, res) => {
 		try {
 			const {
-				PersonalLog
+				Note
 			} = req.models;
 			
 			// Find data
-			const log = await PersonalLog.findByPk(req.params.id);
-			if(!log) {
-				req.messages = [{
-					message: "Log not found",
-					error: true,
-					type: 'error',
-				}];
-				
-				const expanded = await expandData(req);
+			const note = await Note.findByPk(req.params.id);
+			if(!note) {
 				return res.status(404).send({
-					...expanded
+					messages: [{
+						message: "Not found",
+						error: true,
+						type: 'error',
+					}]
 				});
 			}
 			
 			// Update
-			Object.assign(log, req.body);
-			await log.save();
+			Object.assign(note, req.body);
+			await note.save();
 			
 			req.messages = [{
                 message: "Updated",
@@ -166,14 +152,14 @@ export default function personalLogRouter() {
 	router.get("/:id", async (req, res) => {
 		try {
 			const {
-				PersonalLog
+				Note
 			} = req.models;
 			
 			// Find data
-			const log = await PersonalLog.findByPk(req.params.id, {
+			const note = await Note.findByPk(req.params.id, {
 				raw: true,
 			});
-			if(!log) {
+			if(!note) {
 				req.messages = [{
 					message: "Not found",
 					error: true,
@@ -187,7 +173,7 @@ export default function personalLogRouter() {
 			}
 			
 			return res.status(200).send({
-				log
+				note
 			});
 		} catch(err) {
 			console.error(err);
@@ -206,12 +192,12 @@ export default function personalLogRouter() {
 	router.delete("/:id", async (req, res) => {
 		try {
 			const {
-				PersonalLog
+				Note
 			} = req.models;
 			
 			// Find data
-			const log = await PersonalLog.findByPk(req.params.id);
-			if(!log) {
+			const note = await Note.findByPk(req.params.id);
+			if(!note) {
 				req.messages = [{
 					message: "Not found",
 					error: true,
@@ -224,7 +210,7 @@ export default function personalLogRouter() {
 				});
 			}
 			
-			await log.destroy();
+			await note.destroy();
 			
 			req.messages = [{
 				message: "Deleted",
@@ -249,5 +235,5 @@ export default function personalLogRouter() {
 		}
 	});
 	
-    return router;
+	return router;
 }

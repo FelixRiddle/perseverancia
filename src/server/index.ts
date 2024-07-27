@@ -1,7 +1,6 @@
 import express, { Request } from "express";
 import cors from "cors";
 import color from "ansi-color";
-import flash from "connect-flash";
 import cookieParser from "cookie-parser";
 import { v4 as uuidv4 } from "uuid";
 import session from "express-session";
@@ -101,7 +100,7 @@ export default async function startServer(models: Models) {
 	});
 	
 	// Create table
-	await sequelizeStore.sync();
+	sequelizeStore.sync();
 	
 	app.use(session({
 		store: sequelizeStore,
@@ -110,9 +109,6 @@ export default async function startServer(models: Models) {
 		resave: false,
 		saveUninitialized: true,
 	}));
-	
-	// Use flash
-	app.use(flash());
 	
     // Routes
 	app.use((req, res, next) => {
