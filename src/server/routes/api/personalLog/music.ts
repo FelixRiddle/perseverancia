@@ -1,11 +1,48 @@
 import express from "express";
 import expandData from "../../../../lib/miscellaneous/expandData";
+import { Op } from "sequelize";
 
 /**
  * Music router
  */
 export default function musicRouter() {
 	const router = express.Router();
+	
+    // Search
+	// Sorted out through the name
+    router.get("/search/:query", async (req, res) => {
+        try {
+            const {
+                Music
+            } = req.models;
+            
+            const searchTerm = req.params.query;
+            
+            const playlist = await Music.findAll({
+                where: {
+                    name: {
+                        [Op.like]: `%${searchTerm}%`
+                    }
+                },
+                raw: true,
+            });
+            
+            return res.status(200).send({
+                playlist
+            });
+        } catch(err) {
+            console.error(err);
+            req.flash("messages", [{
+                message: "Error 500: Internal error",
+                type: "error"
+            }]);
+            
+            const expanded = await expandData(req);
+            return res.status(500).send({
+                ...expanded
+            });
+        }
+    });
 	
 	// TODO: Pagination
 	router.get("/", async (req, res) => {
@@ -199,4 +236,3 @@ export default function musicRouter() {
 	
 	return router;
 }
-
