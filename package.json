@@ -38,7 +38,7 @@
 		"dotenv": "^16.4.5",
 		"express": "^4.19.2",
 		"express-session": "^1.18.0",
-		"felixriddle.ts-app-models": "^1.0.13",
+		"felixriddle.ts-app-models": "^1.0.14",
 		"sequelize": "^6.37.3",
 		"socket.io": "^4.7.5",
 		"uuid": "^10.0.0"

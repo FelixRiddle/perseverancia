@@ -10,7 +10,7 @@ export default function musicRouter() {
 	router.post("/", async (req, res) => {
 		try {
 			const {
-				music: Music
+				Music
 			} = req.models;
 			
 			await Music.create(req.body);
