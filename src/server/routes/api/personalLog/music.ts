@@ -7,6 +7,33 @@ import expandData from "../../../../lib/miscellaneous/expandData";
 export default function musicRouter() {
 	const router = express.Router();
 	
+	router.get("/", async (req, res) => {
+		try {
+			const {
+				Music
+			} = req.models;
+			
+			const playlist = await Music.findAll({
+				raw: true,
+			});
+			
+			return res.status(200).send({
+				playlist
+			});
+		} catch(err) {
+			console.error(err);
+            req.flash("messages", [{
+                message: "Error 500: Internal error",
+                type: "error"
+            }]);
+            
+            const expanded = await expandData(req);
+            return res.status(500).send({
+                ...expanded
+			});
+		}
+	});
+	
 	router.post("/", async (req, res) => {
 		try {
 			const {
