@@ -19,7 +19,10 @@
 	"description": "",
 	"devDependencies": {
 		"@types/argparse": "^2.0.16",
+		"@types/connect-flash": "^0.0.40",
+		"@types/cookie-parser": "^1.4.7",
 		"@types/express": "^4.17.21",
+		"@types/uuid": "^10.0.0",
 		"tsup": "^8.2.3",
 		"tsx": "^4.16.2",
 		"typescript": "^5.5.4"
@@ -27,11 +30,17 @@
 	"dependencies": {
 		"ansi-color": "^0.2.1",
 		"argparse": "^2.0.1",
+		"body-parser": "^1.20.2",
+		"connect-flash": "^0.1.1",
+		"connect-session-sequelize": "^7.1.7",
+		"cookie-parser": "^1.4.6",
 		"cors": "^2.8.5",
 		"dotenv": "^16.4.5",
 		"express": "^4.19.2",
-		"felixriddle.ts-app-models": "^1.0.12",
+		"express-session": "^1.18.0",
+		"felixriddle.ts-app-models": "^1.0.13",
 		"sequelize": "^6.37.3",
-		"socket.io": "^4.7.5"
+		"socket.io": "^4.7.5",
+		"uuid": "^10.0.0"
 	}
 }

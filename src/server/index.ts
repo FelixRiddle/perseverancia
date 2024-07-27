@@ -1,10 +1,16 @@
 import express, { Request } from "express";
 import cors from "cors";
 import color from "ansi-color";
+import flash from "connect-flash";
+import cookieParser from "cookie-parser";
+import { v4 as uuidv4 } from "uuid";
+import session from "express-session";
+import ConnectSequelizeSession from "connect-session-sequelize";
 
-import Models from "../model/Models";
-import { PORT } from "../lib/config/env";
+import { DEVELOPMENT, PORT } from "../lib/config/env";
 import mainRouter from "./routes";
+import { Models } from "felixriddle.ts-app-models";
+import bodyParser from "body-parser";
 
 /**
  * Print method and route
@@ -45,20 +51,69 @@ function printRoute(req: Request) {
 export default async function startServer(models: Models) {
 	const app = express();
 	
-    app.use(express.json());
-	
 	// Cors
-	const whitelist = ['http://localhost:3011', 'http://localhost:3003'];
+	let whitelist: Array<string> = [];
+	let frontUrl = process.env.FRONTEND_URL;
+	if(!frontUrl && DEVELOPMENT) {
+		whitelist.push('http://localhost:3011');
+		whitelist.push("http://localhost:3003");
+	}
     app.use(cors({
+		// Allow the use of credentials
+		credentials: true,
 		origin: function (origin: any, callback: (error?: any, pass?: boolean) => void) {
+			// Postman error, there's no origin, testing only
+			if(!origin && DEVELOPMENT){
+			  return callback(null, true);
+			}
+			
 			if (whitelist.indexOf(origin) !== -1) {
 				callback(null, true);
 			} else {
-				callback(new Error('Not allowed by CORS'));
+				const error = new Error('Not allowed by CORS');
+				console.error(error);
+				callback(error);
 			}
 		}
 	}));
     
+	// First things first, serve public files
+	app.use("/public", express.static("public"));
+	
+	// Only after the public files are served we use the rest of the middlewares
+    app.use(express.json());
+	
+	// Body parser
+	app.use(bodyParser.json());
+	app.use(bodyParser.urlencoded({
+		extended: true,
+	}));
+	
+	// Cheap tricks 😝
+	const secretToken = process.env.SECRET_TOKEN || `${uuidv4()}-${uuidv4()}`;
+	const secretKeyName = process.env.SECRET_KEY_NAME || uuidv4();
+	app.use(cookieParser(secretToken));
+	
+	const SequelizeStore = ConnectSequelizeSession(session.Store);
+	const sequelizeStore = new SequelizeStore({
+		db: models.connection,
+		tableName: "session"
+	});
+	
+	// Create table
+	await sequelizeStore.sync();
+	
+	app.use(session({
+		store: sequelizeStore,
+		secret: secretToken,
+		key: secretKeyName,
+		resave: false,
+		saveUninitialized: true,
+	}));
+	
+	// Use flash
+	app.use(flash());
+	
     // Routes
 	app.use((req, res, next) => {
 		printRoute(req);

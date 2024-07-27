@@ -1,7 +1,7 @@
 import { ArgumentParser } from "argparse";
 import dotenv from "dotenv";
-import Models from "../model/Models";
 import startServer from "../server";
+import { Models, TablesController } from "felixriddle.ts-app-models";
 
 const parser = new ArgumentParser({
     description: "Good roots startup"
@@ -18,19 +18,6 @@ parser.add_argument("--test", {
 });
 
 /**
- * Sync
- */
-async function syncModels(models: Models) {
-	for(const model of models.models()) {
-		try {
-			await model.sync();
-		} catch(err: any) {
-			console.log(`Couldn't sync model: `, model);
-		}
-	}
-}
-
-/**
  * Execute commands
  */
 export default async function executeCommands() {
@@ -42,7 +29,8 @@ export default async function executeCommands() {
     const args = parser.parse_args();
     
 	const models = new Models();
-	await syncModels(models);
+	const tc = new TablesController(models);
+	await tc.upAll();
 	
     if(args.serve) {
 		await startServer(models);
