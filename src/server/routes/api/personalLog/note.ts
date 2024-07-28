@@ -79,7 +79,9 @@ export default function noteRouter() {
 				Note
 			} = req.models;
 			
-			await Note.create(req.body);
+			const note = await Note.create(req.body, {
+				raw: true,
+			});
 			
 			req.messages = [{
 				message: "Inserted",
@@ -88,7 +90,9 @@ export default function noteRouter() {
 			
 			const expanded = await expandData(req);
 			return res.status(200).send({
-				...expanded
+				...expanded,
+				// We may need the note's id
+				note,
 			});
 		} catch(err) {
 			console.error(err);

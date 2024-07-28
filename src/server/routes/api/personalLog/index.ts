@@ -3,18 +3,17 @@ import musicRouter from "./music";
 import expandData from "../../../../lib/miscellaneous/expandData";
 import { Op } from "sequelize";
 import noteRouter from "./note";
+import { Note } from "../../../../types/Note";
 
 /**
  * 
  */
 export default function personalLogRouter() {
     const router = express.Router();
-    
-	// TODO:
-	// logNotes
 	
 	// TODO: I don't really use this one anymore maybe implement it later
 	// listeningTo,
+	
 	router.use("/music", musicRouter());
 	router.use("/note", noteRouter());
 	
@@ -87,15 +86,16 @@ export default function personalLogRouter() {
 		try {
 			const {
 				Address,
+				LogNotes,
+				Note,
 				PersonalLog
 			} = req.models;
 			
 			const data = req.body;
 			
-			// Check if an address was given
+			// Set address id
 			const givenAddress = data.address;
 			if(givenAddress) {
-				// TODO: Try to find the address if it exists
 				let address = await Address.findOne({
 					where: {
 						street: givenAddress.street,
@@ -108,10 +108,40 @@ export default function personalLogRouter() {
 					// Address not found, create it
 					address = await Address.create(givenAddress);
 				}
+				
 				data.addressId = address.id;
+				
+				// Delete address
+				delete data.address;
 			}
 			
-			await PersonalLog.create(req.body);
+			// Manage notes
+			let notes = data.notes;
+			if(notes && notes.length > 0) {
+				const createNotes = notes.map((note: string) => {
+					return {
+                        note,
+                    };
+				});
+				const newNotes = await Note.bulkCreate(createNotes);
+				const notesCreated = newNotes.map((note) => note.get({raw: true}));
+				
+				notes = notesCreated;
+			}
+			
+			// Create log
+			const logCreated = await PersonalLog.create(req.body);
+			
+			// Relation notes - log
+			if(notes && notes.length > 0) {
+				const logNotes = notes.map((note: Note) => {
+                    return {
+                        personalLogId: logCreated.id,
+                        noteId: note.id
+                    };
+                });
+                await LogNotes.bulkCreate(logNotes);
+			}
 			
 			req.messages = [{
 				message: "Ok",
