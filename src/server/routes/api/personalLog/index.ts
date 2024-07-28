@@ -11,7 +11,6 @@ export default function personalLogRouter() {
     const router = express.Router();
     
 	// TODO:
-	// note,
 	// logNotes
 	
 	// TODO: I don't really use this one anymore maybe implement it later
@@ -87,8 +86,30 @@ export default function personalLogRouter() {
 	router.post("/", async (req, res) => {
 		try {
 			const {
+				Address,
 				PersonalLog
 			} = req.models;
+			
+			const data = req.body;
+			
+			// Check if an address was given
+			const givenAddress = data.address;
+			if(givenAddress) {
+				// TODO: Try to find the address if it exists
+				let address = await Address.findOne({
+					where: {
+						street: givenAddress.street,
+						city: givenAddress.city,
+						state: givenAddress.state,
+						country: givenAddress.country
+					}
+				});
+				if(!address) {
+					// Address not found, create it
+					address = await Address.create(givenAddress);
+				}
+				data.addressId = address.id;
+			}
 			
 			await PersonalLog.create(req.body);
 			
