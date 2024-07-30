@@ -124,7 +124,9 @@ export default function personalLogRouter() {
                     };
 				});
 				const newNotes = await Note.bulkCreate(createNotes);
-				const notesCreated = newNotes.map((note) => note.get({raw: true}));
+				const notesCreated = newNotes.map((note) => note.get({
+					raw: true
+				}));
 				
 				notes = notesCreated;
 			}

@@ -1,5 +1,5 @@
 import express from "express";
-import personalLogRouter from "./personalLog";
+import personalLogRouter from "./personal-log";
 
 /**
  * 
