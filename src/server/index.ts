@@ -8,7 +8,7 @@ import ConnectSequelizeSession from "connect-session-sequelize";
 
 import { DEVELOPMENT, PORT } from "../lib/config/env";
 import mainRouter from "./routes";
-import { Models } from "felixriddle.ts-app-models";
+import { Models, TablesController } from "felixriddle.ts-app-models";
 import bodyParser from "body-parser";
 
 /**
@@ -47,7 +47,16 @@ function printRoute(req: Request) {
 /**
  * Models
  */
-export default async function startServer(models: Models) {
+export default async function startServer(useModels?: Models) {
+	// Use models or create new
+	// Mainly because we don't want to waste resources
+	let models = useModels;
+	if(!models) {
+		const models = new Models();
+		const tc = new TablesController(models);
+		await tc.upAll();
+	}
+	
 	const app = express();
 	
 	// Cors
