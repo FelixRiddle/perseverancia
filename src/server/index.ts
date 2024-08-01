@@ -54,8 +54,11 @@ export default async function startServer(models: Models) {
 	let whitelist: Array<string> = [];
 	let frontUrl = process.env.FRONTEND_URL;
 	if(!frontUrl && DEVELOPMENT) {
-		whitelist.push('http://localhost:3011');
-		whitelist.push("http://localhost:3003");
+		// Haha what a nice trick
+		for(let i = 0; i < 20; i++) {
+			const port = 3000 + i;
+			whitelist.push(`http://localhost:${port}`);
+		}
 	}
     app.use(cors({
 		// Allow the use of credentials
