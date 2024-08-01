@@ -54,6 +54,83 @@ export default function personalLogRouter() {
         }
     });
 	
+	router.get("/count", async (req, res) => {
+		try {
+            const {
+                PersonalLog
+            } = req.models;
+            
+            const count = await PersonalLog.count();
+            
+            return res.status(200).send({
+                count
+            });
+        } catch(err) {
+            console.error(err);
+            req.messages = [{
+                message: "Error 500: Internal error",
+                type: "error"
+            }];
+            
+            const expanded = await expandData(req);
+            return res.status(500).send({
+               ...expanded
+            });
+        }
+	});
+	
+	router.post("/page", async (req, res) => {
+		try {
+			const queryInfo = req.body;
+			
+			const {
+                query,
+                page,
+                perPage
+            } = queryInfo;
+			
+			const {
+                PersonalLog
+            } = req.models;
+			
+			console.log(`Query info: `, queryInfo);
+			
+			// Where clause
+			const where: any = {};
+            if(query) {
+                where.description = {
+                    [Op.like]: `%${query}%`
+                };
+            };
+			
+			// Find logs from most recent to oldest
+			const logs = await PersonalLog.findAll({
+                where,
+                order: [["createdAt", "DESC"]],
+                limit: perPage,
+                offset: (page - 1) * perPage,
+                raw: true,
+            });
+			
+			console.log(`Logs: `, logs);
+            
+            return res.status(200).send({
+                logs
+            });
+		} catch(err) {
+			console.error(err);
+            req.messages = [{
+                message: "Error 500: Internal error",
+                type: "error"
+             }];
+            
+            const expanded = await expandData(req);
+            return res.status(500).send({
+                ...expanded
+            });
+		}
+	});
+	
 	// TODO: Pagination
 	router.get("/", async (req, res) => {
 		try {
