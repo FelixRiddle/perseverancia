@@ -36,7 +36,14 @@ export default function personalLogRouter() {
                 },
                 raw: true,
             });
-            
+			
+			// Booleans are 1 or 0, but they should be actual booleans 'true' or 'false'
+			logs.forEach(log => {
+                log.timeAccurate = log.timeAccurate ? (log.timeAccurate === 1 ? true : false) : false;
+				log.untilTimeAccurate = log.untilTimeAccurate? (log.untilTimeAccurate === 1? true : false) : false;
+				log.mixed = log.mixed? (log.mixed === 1? true : false) : false;
+            });
+			
             return res.status(200).send({
                 logs
             });
@@ -93,8 +100,6 @@ export default function personalLogRouter() {
                 PersonalLog
             } = req.models;
 			
-			console.log(`Query info: `, queryInfo);
-			
 			// Where clause
 			const where: any = {};
             if(query) {
@@ -112,7 +117,12 @@ export default function personalLogRouter() {
                 raw: true,
             });
 			
-			console.log(`Logs: `, logs);
+			// Booleans are 1 or 0, but they should be actual booleans 'true' or 'false'
+			logs.forEach(log => {
+                log.timeAccurate = log.timeAccurate ? (log.timeAccurate === 1 ? true : false) : false;
+				log.untilTimeAccurate = log.untilTimeAccurate? (log.untilTimeAccurate === 1? true : false) : false;
+				log.mixed = log.mixed? (log.mixed === 1? true : false) : false;
+            });
             
             return res.status(200).send({
                 logs
@@ -141,6 +151,13 @@ export default function personalLogRouter() {
 			const logs = await PersonalLog.findAll({
 				raw: true,
 			});
+			
+			// Booleans are 1 or 0, but they should be actual booleans 'true' or 'false'
+			logs.forEach(log => {
+                log.timeAccurate = log.timeAccurate ? (log.timeAccurate === 1 ? true : false) : false;
+				log.untilTimeAccurate = log.untilTimeAccurate? (log.untilTimeAccurate === 1? true : false) : false;
+				log.mixed = log.mixed? (log.mixed === 1? true : false) : false;
+            });
 			
 			return res.status(200).send({
 				logs
@@ -223,7 +240,7 @@ export default function personalLogRouter() {
 			}
 			
 			req.messages = [{
-				message: "Ok",
+				message: "Log created",
 				type: "success"
 			}];
 			
@@ -303,6 +320,7 @@ export default function personalLogRouter() {
 			const log = await PersonalLog.findByPk(req.params.id, {
 				raw: true,
 			});
+			
 			if(!log) {
 				req.messages = [{
 					message: "Not found",
@@ -315,6 +333,10 @@ export default function personalLogRouter() {
 					...expanded
 				});
 			}
+			
+			log.timeAccurate = log.timeAccurate ? (log.timeAccurate === 1 ? true : false) : false;
+			log.untilTimeAccurate = log.untilTimeAccurate? (log.untilTimeAccurate === 1? true : false) : false;
+			log.mixed = log.mixed? (log.mixed === 1? true : false) : false;
 			
 			return res.status(200).send({
 				log
