@@ -34,6 +34,9 @@ export default function personalLogRouter() {
                         [Op.like]: `%${searchTerm}%`
                     }
                 },
+				order: [
+					["start", "DESC"]
+				],
                 raw: true,
             });
 			
@@ -111,7 +114,9 @@ export default function personalLogRouter() {
 			// Find logs from most recent to oldest
 			const logs = await PersonalLog.findAll({
                 where,
-                order: [["createdAt", "DESC"]],
+				order: [
+					["start", "DESC"]
+				],
                 limit: perPage,
                 offset: (page - 1) * perPage,
                 raw: true,
@@ -150,6 +155,9 @@ export default function personalLogRouter() {
 			
 			const logs = await PersonalLog.findAll({
 				raw: true,
+				order: [
+					["start", "DESC"]
+				],
 			});
 			
 			// Booleans are 1 or 0, but they should be actual booleans 'true' or 'false'
