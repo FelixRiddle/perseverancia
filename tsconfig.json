@@ -9,7 +9,6 @@
 	"typeRoots": [
 		"./src/types/express/index.d.ts"
 	],
-	"types": ["@types/jest", "@types/node"]
   },
   "files": [
     "./src/**/*"

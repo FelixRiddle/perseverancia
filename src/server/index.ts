@@ -5,11 +5,11 @@ import cookieParser from "cookie-parser";
 import { v4 as uuidv4 } from "uuid";
 import session from "express-session";
 import ConnectSequelizeSession from "connect-session-sequelize";
-
-import { DEVELOPMENT, PORT } from "../lib/config/env";
-import mainRouter from "./routes";
 import { Models, TablesController } from "felixriddle.ts-app-models";
 import bodyParser from "body-parser";
+
+import mainRouter from "./routes";
+import { isDevelopment, serverPort } from "../lib/config/env";
 
 /**
  * Print method and route
@@ -59,10 +59,12 @@ export default async function startServer(useModels?: Models) {
 	
 	const app = express();
 	
+	const isDev = isDevelopment();
+	
 	// Cors
 	let whitelist: Array<string> = [];
 	let frontUrl = process.env.FRONTEND_URL;
-	if(!frontUrl && DEVELOPMENT) {
+	if(!frontUrl && isDev) {
 		// Haha what a nice trick
 		for(let i = 0; i < 20; i++) {
 			const port = 3000 + i;
@@ -74,7 +76,7 @@ export default async function startServer(useModels?: Models) {
 		credentials: true,
 		origin: function (origin: any, callback: (error?: any, pass?: boolean) => void) {
 			// Postman error, there's no origin, testing only
-			if(!origin && DEVELOPMENT){
+			if(!origin && isDev){
 			  return callback(null, true);
 			}
 			
@@ -133,6 +135,7 @@ export default async function startServer(useModels?: Models) {
 	});
     app.use(mainRouter());
 	
+	const PORT = serverPort();
 	app.listen(PORT, () => {
 		console.log(`Server listening at http://localhost:${PORT}`);
 	});
