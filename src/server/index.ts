@@ -63,13 +63,17 @@ export default async function startServer(useModels?: Models) {
 	
 	// Cors
 	let whitelist: Array<string> = [];
-	let frontUrl = process.env.FRONTEND_URL;
-	if(!frontUrl && isDev) {
-		// Haha what a nice trick
-		for(let i = 0; i < 20; i++) {
-			const port = 3000 + i;
-			whitelist.push(`http://localhost:${port}`);
+	const frontUrl = process.env.FRONTEND_URL;
+	if(!frontUrl) {
+		if(isDev) {
+			// Haha what a nice trick
+			for(let i = 0; i < 20; i++) {
+				const port = 3000 + i;
+				whitelist.push(`http://localhost:${port}`);
+			}
 		}
+	} else {
+		whitelist.push(frontUrl);
 	}
     app.use(cors({
 		// Allow the use of credentials
@@ -77,7 +81,7 @@ export default async function startServer(useModels?: Models) {
 		origin: function (origin: any, callback: (error?: any, pass?: boolean) => void) {
 			// Postman error, there's no origin, testing only
 			if(!origin && isDev){
-			  return callback(null, true);
+				return callback(null, true);
 			}
 			
 			if (whitelist.indexOf(origin) !== -1) {
