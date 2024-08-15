@@ -12,7 +12,7 @@
 		"dev": "tsx watch src/cmd/index.ts --serve",
 		"build": "tsup",
 		"test": "jest --config jest.config.ts",
-		"release": "node dist/index.js --serve"
+		"release": "FRONTEND_URL=http://localhost:8083 node dist/index.js --serve"
 	},
 	"keywords": [],
 	"author": "",
