@@ -79,12 +79,10 @@ export default async function startServer(useModels?: Models) {
 		// Allow the use of credentials
 		credentials: true,
 		origin: function (origin: any, callback: (error?: any, pass?: boolean) => void) {
-			// Postman error, there's no origin, testing only
-			if(!origin && isDev){
-				return callback(null, true);
-			}
-			
-			if (whitelist.indexOf(origin) !== -1) {
+			// This happens when you load your page in the same origin that you are making API calls to.
+			// The browser doesn't set the "Origin" header unless the API call's domain is different from
+			// the one where the page is being served.
+			if (whitelist.indexOf(origin) !== -1 || !origin) {
 				callback(null, true);
 			} else {
 				const error = new Error('Not allowed by CORS');
