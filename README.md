@@ -6,7 +6,7 @@ This will be the unified backend for my many applications.
 
 ```bash
 # For cors(Release)
-FRONTEND_URL=http://localhost:8084
+FRONTEND_URL=http://localhost:8083
 NODE_ENV=production
 
 # Secrets
