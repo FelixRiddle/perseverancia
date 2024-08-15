@@ -14,3 +14,17 @@ export function isDevelopment() {
 export function serverPort() {
 	return process.env.PORT || (!isDevelopment() && 8084) || 3010;
 }
+
+/**
+ * Check if server is running on production mode
+ */
+export function isProduction() {
+	return process.env.NODE_ENV === 'production';
+}
+
+/**
+ * Get frontend url
+ */
+export function frontendUrl() {
+    return process.env.FRONTEND_URL;
+}

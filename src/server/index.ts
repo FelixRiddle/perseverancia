@@ -9,7 +9,7 @@ import { Models, TablesController } from "felixriddle.ts-app-models";
 import bodyParser from "body-parser";
 
 import mainRouter from "./routes";
-import { isDevelopment, serverPort } from "../lib/config/env";
+import { frontendUrl, isDevelopment, isProduction, serverPort } from "../lib/config/env";
 
 /**
  * Print method and route
@@ -139,6 +139,8 @@ export default async function startServer(useModels?: Models) {
 	});
     app.use(mainRouter());
 	
+	console.log(`Is production?: `, isProduction());
+	console.log(`Frontend url: `, frontendUrl());
 	const PORT = serverPort();
 	app.listen(PORT, () => {
 		console.log(`Server listening at http://localhost:${PORT}`);
